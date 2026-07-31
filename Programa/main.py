@@ -4,8 +4,11 @@ Simulador de Times - Honkai: Star Rail (ou jogo similar)
 Este programa:
   1) Treina um modelo (RandomForestRegressor) com base no histórico de resultados.
   2) Mostra as melhores combinações de time SIMULADAS pelo modelo (ainda não testadas).
-  3) Permite TESTAR um time específico e ver a pontuação prevista pelo modelo.
-  4) Permite CADASTRAR uma nova tentativa real (3 resultados) e atualiza o CSV.
+  3) Permite CADASTRAR uma nova tentativa real (3 resultados) e atualiza o CSV.
+
+O modelo é RETREINADO a cada novo cadastro (veja o main()), então ele "aprende"
+ao longo do tempo: quanto mais tentativas reais forem registradas, mais dados
+o RandomForest tem para refinar suas previsões de pontuação.
 
 As opções de batalha, efeito de buff e personagens vêm das tabelas de referência
 (batalhas.csv, efeitos.csv, personagens.csv), não apenas do histórico — assim dá
@@ -97,6 +100,57 @@ def efeitos_da_batalha(df_batalhas, df_efeitos, nome_batalha):
 # Treinamento do modelo
 # --------------------------------------------------------------------------- #
 def treinar_modelo(df):
+    """
+    Treina o modelo que aprende a prever a pontuação média de um time
+    a partir da batalha, do efeito de buff e dos 4 personagens escolhidos.
+
+    Como funciona, passo a passo:
+
+    1) ENTRADAS (X) e SAÍDA (y)
+       - X: as colunas categóricas que descrevem a "receita" do time
+         (batalha, efeito_buff, personagem_1..4).
+       - y: o valor que queremos prever, aqui a pontuação_media obtida
+         nas tentativas reais já cadastradas.
+       Ou seja, o modelo aprende o padrão "essa combinação de batalha +
+       buff + personagens tende a gerar essa pontuação".
+
+    2) PRÉ-PROCESSAMENTO (OneHotEncoder)
+       - Os dados de entrada são todos texto (nomes de batalha, buff,
+         personagens), e modelos de machine learning trabalham com números.
+       - O OneHotEncoder transforma cada valor categórico em uma coluna
+         binária (0 ou 1). Por exemplo, a coluna "batalha" vira várias
+         colunas do tipo "batalha_X", "batalha_Y", cada uma marcando
+         se aquele time é ou não daquela batalha.
+       - handle_unknown="ignore" evita erro caso apareça, numa previsão
+         futura, um valor que o modelo nunca viu no treino (ele
+         simplesmente trata como "nenhuma das categorias conhecidas").
+
+    3) MODELO (RandomForestRegressor)
+       - É um conjunto ("floresta") de várias árvores de decisão
+         (n_estimators=300 = 300 árvores).
+       - Cada árvore aprende, de forma um pouco diferente (por causa de
+         aleatoriedade nos dados/atributos usados), a relação entre a
+         combinação de time e a pontuação.
+       - A previsão final é a MÉDIA das previsões de todas as árvores,
+         o que deixa o resultado mais estável e menos sujeito a "decorar"
+         demais os dados de treino (overfitting) do que uma única árvore.
+       - random_state=42 apenas fixa a semente aleatória, para que o
+         treinamento seja reproduzível (mesmos dados -> mesmo resultado).
+
+    4) PIPELINE
+       - Encadeia o pré-processamento (OneHotEncoder) e o modelo
+         (RandomForestRegressor) em um único objeto. Assim, sempre que
+         formos prever algo novo, os dados passam automaticamente pelas
+         mesmas transformações usadas no treino, sem precisar repetir
+         esse código toda vez.
+
+    5) APRENDIZADO CONTÍNUO
+       - Esta função é chamada de novo (retreinando o modelo do zero)
+         toda vez que um novo registro real é cadastrado (veja main()).
+       - Como o RandomForest é treinado com TODO o histórico disponível
+         a cada chamada, o modelo tende a ficar mais preciso conforme
+         mais tentativas reais vão sendo cadastradas ao longo do tempo.
+    """
     X = df[COLUNAS_CATEGORICAS]
     y = df["pontuacao_media"]
 
@@ -115,6 +169,9 @@ def treinar_modelo(df):
         ]
     )
 
+    # fit() é o passo de treinamento em si: o modelo "olha" para todas as
+    # combinações já cadastradas (X) e suas pontuações reais (y) e ajusta
+    # seus parâmetros internos para aprender esse padrão.
     pipeline.fit(X, y)
     return pipeline
 
@@ -190,6 +247,10 @@ def melhores_resultados_simulados(df, pipeline, df_batalhas, df_efeitos, df_pers
 
     df_sim = pd.DataFrame(linhas_simuladas)
     X_sim = df_sim[COLUNAS_CATEGORICAS]
+    # predict() usa o modelo já treinado para estimar a pontuação de cada
+    # combinação simulada, sem precisar jogar de verdade: os dados passam
+    # pelo mesmo OneHotEncoder do treino e depois pelas 300 árvores do
+    # RandomForest, que devolvem a média das previsões de cada uma.
     df_sim["pontuacao_prevista"] = pipeline.predict(X_sim)
 
     df_sim = df_sim.sort_values("pontuacao_prevista", ascending=False).head(top_n)
@@ -212,44 +273,7 @@ def melhores_resultados_simulados(df, pipeline, df_batalhas, df_efeitos, df_pers
 
 
 # --------------------------------------------------------------------------- #
-# Opção 2: Testar times específicos
-# --------------------------------------------------------------------------- #
-def testar_time(pipeline, df_batalhas, df_efeitos, df_personagens):
-    batalha = escolher_da_lista(nomes_batalhas(df_batalhas), "Qual batalha?")
-    buffs = efeitos_da_batalha(df_batalhas, df_efeitos, batalha)
-    if not buffs:
-        print("Essa batalha não tem efeitos de buff cadastrados em efeitos.csv.")
-        return
-    buff = escolher_da_lista(buffs, "Qual efeito de buff?")
-
-    personagens = nomes_personagens(df_personagens)
-
-    print("\nAgora escolha os 4 personagens do time:")
-    time_escolhido = []
-    for i in range(1, 5):
-        p = escolher_da_lista(personagens, f"Personagem {i}:")
-        time_escolhido.append(p)
-
-    entrada = pd.DataFrame(
-        [
-            {
-                "batalha": batalha,
-                "efeito_buff": buff,
-                "personagem_1": time_escolhido[0],
-                "personagem_2": time_escolhido[1],
-                "personagem_3": time_escolhido[2],
-                "personagem_4": time_escolhido[3],
-            }
-        ]
-    )
-
-    previsao = pipeline.predict(entrada[COLUNAS_CATEGORICAS])[0]
-    print(f"\n>>> Time: {', '.join(time_escolhido)}")
-    print(f">>> Pontuação prevista pelo modelo: {previsao:.1f} pts")
-
-
-# --------------------------------------------------------------------------- #
-# Opção 3: Cadastrar tentativa real
+# Opção 2: Cadastrar tentativa real
 # --------------------------------------------------------------------------- #
 def cadastrar_tentativa(df, df_batalhas, df_efeitos, df_personagens):
     batalha = escolher_da_lista(nomes_batalhas(df_batalhas), "Qual batalha?")
@@ -327,9 +351,8 @@ def main():
     while True:
         print("\n===================== MENU =====================")
         print("[1] Melhores resultados simulados")
-        print("[2] Testar times")
-        print("[3] Cadastre sua tentativa aqui")
-        print("[4] Sair")
+        print("[2] Cadastre sua tentativa aqui")
+        print("[3] Sair")
         print("==================================================")
 
         opcao = input("Escolha uma opção: ").strip()
@@ -339,12 +362,15 @@ def main():
                 df, pipeline, df_batalhas, df_efeitos, df_personagens
             )
         elif opcao == "2":
-            testar_time(pipeline, df_batalhas, df_efeitos, df_personagens)
-        elif opcao == "3":
             df = cadastrar_tentativa(df, df_batalhas, df_efeitos, df_personagens)
+            # A cada novo registro real cadastrado, o modelo é retreinado
+            # do zero com o histórico atualizado (incluindo o novo dado).
+            # É assim que o programa "aprende" com o tempo: mais tentativas
+            # cadastradas -> mais exemplos para o RandomForest -> previsões
+            # tendem a ficar mais precisas.
             print("Retreinando modelo com o novo registro...")
             pipeline = treinar_modelo(df)
-        elif opcao == "4":
+        elif opcao == "3":
             print("Até mais!")
             break
         else:
