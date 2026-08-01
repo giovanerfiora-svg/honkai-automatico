@@ -1,5 +1,5 @@
 """
-Simulador de Times - Honkai: Star Rail (ou jogo similar)
+Simulador de Times - Honkai: Star Rail
 
 Este programa:
   1) Treina um modelo (RandomForestRegressor) com base no histórico de resultados.
