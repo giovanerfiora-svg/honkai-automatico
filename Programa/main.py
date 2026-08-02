@@ -53,6 +53,15 @@ COLUNAS_CATEGORICAS = [
 
 COLUNAS_TENTATIVAS = ["tentativa_1", "tentativa_2", "tentativa_3"]
 
+# Personagens considerados "curandeiros". Todo time (simulado ou cadastrado)
+# precisa ter PELO MENOS um destes quatro.
+CURANDEIROS = {"Gallagher", "Huohuo", "Hyacine", "Dan Heng (Preservação)"}
+
+
+def time_tem_curandeiro(personagens):
+    """Retorna True se pelo menos um dos personagens for um curandeiro."""
+    return any(p in CURANDEIROS for p in personagens)
+
 
 # --------------------------------------------------------------------------- #
 # Carregamento de dados e tabelas de referência
@@ -233,6 +242,10 @@ def melhores_resultados_simulados(df, pipeline, df_batalhas, df_efeitos, df_pers
     linhas_simuladas = []
     for buff in buffs:
         for combo in itertools.combinations(personagens, 4):
+            # Regra fixa: todo time precisa ter pelo menos 1 curandeiro
+            # (Gallagher, Huohuo, Hyacine ou Dan Heng da Preservação).
+            if not time_tem_curandeiro(combo):
+                continue
             linhas_simuladas.append(
                 {
                     "batalha": batalha,
@@ -284,11 +297,22 @@ def cadastrar_tentativa(df, df_batalhas, df_efeitos, df_personagens):
     efeito_buff = escolher_da_lista(buffs, "Qual efeito de buff?")
 
     personagens_disponiveis = nomes_personagens(df_personagens)
-    print("\nEscolha os 4 personagens do time:")
-    personagens = []
-    for i in range(1, 5):
-        p = escolher_da_lista(personagens_disponiveis, f"Personagem {i}:")
-        personagens.append(p)
+
+    while True:
+        print("\nEscolha os 4 personagens do time:")
+        personagens = []
+        for i in range(1, 5):
+            p = escolher_da_lista(personagens_disponiveis, f"Personagem {i}:")
+            personagens.append(p)
+
+        if time_tem_curandeiro(personagens):
+            break
+
+        print(
+            "\nEsse time não tem nenhum curandeiro! Todo time precisa ter "
+            "pelo menos um destes: " + ", ".join(sorted(CURANDEIROS)) + "."
+        )
+        print("Vamos escolher os personagens de novo.")
 
     tentativas = []
     for i in range(1, 4):
