@@ -2,15 +2,9 @@ id_registro,batalha,efeito_buff,personagem_1,personagem_2,personagem_3,personage
 e_1785258454051_4381,1ª Batalha,Golpe de Fragmentação,Rappa,A Dália,Fugue,Gallagher,2526.0,2613.0,2752.0,2630.33,2752.0,113.99,
 e_1785258472179_1884,1ª Batalha,Golpe de Fragmentação,Rappa,A Dália,Fugue,Dan Heng (Preservação),2686.0,2466.0,2677.0,2609.67,2686.0,124.5,
 e_1785258492962_5181,1ª Batalha,Golpe de Fragmentação,Rappa,A Dália,Fugue,Huohuo,2607.0,2545.0,2525.0,2559.0,2607.0,42.76,
-e_1785258535469_5246,2ª Batalha,Rumo à Apoteose,Archer,Mortenax Blade,Tribbie,Hyacine,3176.0,3115.0,3115.0,3135.33,3176.0,35.22,
-e_1785258588045_3161,2ª Batalha,Força Irrefreável,Castorice,Amy (Recordação),Tribbie,Hyacine,3091.0,3035.0,3091.0,3072.33,3091.0,32.33,
-e_1785258625714_2236,2ª Batalha,Rumo à Apoteose,A Herta,Mortenax Blade,Tribbie,Hyacine,2961.0,3037.0,2899.0,2965.67,3037.0,69.12,
-e_1785258702287_3153,2ª Batalha,Rumo à Apoteose,Archer,Robin,Tribbie,Dan Heng (Preservação),2909.0,2633.0,2829.0,2790.33,2909.0,142.0,
 e_1785337785106_9879,1ª Batalha,Quebrador de Formação,Mortenax Blade,Amy (Recordação),Tribbie,Hyacine,3091.0,2995.0,3037.0,3041.0,3091.0,48.12,
-e_1785346411001_3132,2ª Batalha,Rumo à Apoteose,Archer,Cerydra,Robin,Dan Heng (Preservação),2689.0,2798.0,2649.0,2712.0,2798.0,77.12,
 e_1785347975869_3148,1ª Batalha,Quebrador de Formação,Mortenax Blade,Welt,Tribbie,Hyacine,2891.0,2820.0,2838.0,2849.67,2891.0,36.91,
 e_1785350934351_2403,1ª Batalha,Quebrador de Formação,Mortenax Blade,A Dália,Tribbie,Hyacine,2851.0,2823.0,2899.0,2857.67,2899.0,38.44,
-e_1785353117701_9528,2ª Batalha,Rumo à Apoteose,Archer,Amy (Recordação),Cerydra,Dan Heng (Preservação),2871.0,2764.0,2914.0,2849.67,2914.0,77.24,
 e_1785356349096_1052,1ª Batalha,Quebrador de Formação,Mortenax Blade,Himeko,Tribbie,Hyacine,2209.0,2358.0,2507.0,2358.0,2507.0,149.0,
 e_1785506427822_5418,1ª Batalha,Maldito até os Ossos,Aglaea,Amy (Recordação),Castorice,Hyacine,1086.0,1081.0,1053.0,1073.33,1086.0,14.52,
 e_1785509802725_7409,1ª Batalha,Quebrador de Formação,A Dália,Amy (Recordação),Anaxa,Hyacine,1176.0,1224.0,1229.0,1209.67,1229.0,23.89,
@@ -22,3 +16,5 @@ e_1785597729524_4390,1ª Batalha,Golpe de Fragmentação,Rappa,Ruan Mei,Saber,Su
 e_1785626601963_8227,1ª Batalha,Quebrador de Formação,A Herta,Amy (Recordação),Fugue,Hyacine,956.0,975.0,958.0,963.0,975.0,8.52,
 e_1785766016059_7150,1ª Batalha,Golpe de Fragmentação,Aglaea,Amy (Recordação),Cerydra,Dan Heng (Preservação),538.0,557.0,454.0,516.33,,44.75,557.0
 e_1785768527586_1382,1ª Batalha,Maldito até os Ossos,A Dália,Amy (Recordação),Fugue,Gallagher,1492.0,1469.0,1410.0,1457.0,,34.54,1492.0
+e_1785773462907_6933,1ª Batalha,Maldito até os Ossos,A Dália,Amy (Recordação),Fugue,Huohuo,1148.0,1026.0,1702.0,1292.0,,294.16,1702.0
+e_1785776557402_2145,1ª Batalha,Maldito até os Ossos,Dan Heng (Preservação),Himeko,Tribbie,Welt,1498.0,1428.0,1448.0,1458.0,,29.44,1498.0

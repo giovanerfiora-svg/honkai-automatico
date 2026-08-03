@@ -170,14 +170,20 @@ def melhores_resultados_simulados(df_resultados, pipeline, df_efeitos, df_person
             for row in df_batalha_hist[["personagem_1", "personagem_2", "personagem_3", "personagem_4"]].values
         )
 
-    print("\nGerando combinações e prevendo com IA...")
+    print("\nGerando combinações inéditas e prevendo com IA...")
 
     linhas_simuladas = []
     loop_buffs = buffs if config["tem_efeitos"] else [None]
 
     for buff in loop_buffs:
         for combo in itertools.combinations(personagens, 4):
+            # Ignora times sem curandeiro/sustentação
             if not time_tem_curandeiro(combo):
+                continue
+            
+            # FILTRO NOVO: Ignora combinações que já foram testadas anteriormente
+            combo_ordenado = tuple(sorted(combo))
+            if combo_ordenado in ja_testados:
                 continue
             
             dado = {
@@ -186,12 +192,15 @@ def melhores_resultados_simulados(df_resultados, pipeline, df_efeitos, df_person
                 "personagem_2": combo[1],
                 "personagem_3": combo[2],
                 "personagem_4": combo[3],
-                "ja_testado": tuple(sorted(combo)) in ja_testados
             }
             if config["tem_efeitos"]:
                 dado["efeito_buff"] = buff
             
             linhas_simuladas.append(dado)
+
+    if not linhas_simuladas:
+        print("\n[Aviso] Não há novas combinações inéditas disponíveis com os personagens atuais!")
+        return
 
     df_sim = pd.DataFrame(linhas_simuladas)
 
@@ -201,19 +210,18 @@ def melhores_resultados_simulados(df_resultados, pipeline, df_efeitos, df_person
 
     df_sim["previsto"] = pipeline.predict(df_sim[config["colunas_cat"]])
 
-    # Se menor é melhor (Memória do Caos / Ciclos), ordenamos em ordem crescente
+    # Ordena as estimativas e seleciona apenas o Top N inédito
     ascending = config["métrica_menor_é_melhor"]
     df_sim = df_sim.sort_values("previsto", ascending=ascending).head(top_n)
 
-    print(f"\n=== Top {top_n} combinações simuladas ({config['nome']}) ===")
+    print(f"\n=== Top {len(df_sim)} combinações inéditas simuladas ({config['nome']}) ===")
     for _, linha in df_sim.iterrows():
-        status = "(já testado)" if linha["ja_testado"] else "(inédito)"
         buff_str = f" | Buff: {linha['efeito_buff']}" if config["tem_efeitos"] else ""
         unit = "ciclos" if config["métrica_menor_é_melhor"] else "pts"
         print(
             f"  Previsão: {linha['previsto']:.2f} {unit}{buff_str} | "
             f"{linha['personagem_1']}, {linha['personagem_2']}, "
-            f"{linha['personagem_3']}, {linha['personagem_4']} {status}"
+            f"{linha['personagem_3']}, {linha['personagem_4']} (inédito)"
         )
 
 
