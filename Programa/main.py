@@ -221,7 +221,7 @@ def melhores_resultados_simulados(df_resultados, pipeline, df_efeitos, df_person
         print(
             f"  Previsão: {linha['previsto']:.2f} {unit}{buff_str} | "
             f"{linha['personagem_1']}, {linha['personagem_2']}, "
-            f"{linha['personagem_3']}, {linha['personagem_4']} (inédito)"
+            f"{linha['personagem_3']}, {linha['personagem_4']} "
         )
 
 
