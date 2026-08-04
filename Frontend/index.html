@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>HSR — Dashboard de Desempenho</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body class="bg-light p-4">
+<div class="container bg-white p-4 rounded shadow-sm">
+    <header class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h2>📊 HSR Performance Dashboard</h2>
+        <select id="select-modo" class="form-select w-auto" onchange="carregarModo()">
+            <option value="sombra_apocaliptica">Sombra Apocalíptica</option>
+            <option value="pura_ficcao">Pura Ficção</option>
+            <option value="memoria_do_caos">Memória do Caos</option>
+        </select>
+    </header>
+
+    <ul class="nav nav-tabs mb-4" id="myTab">
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-grafico">Gráfico</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-simular">Simular IA</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-cadastrar">Cadastrar Reg</button></li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- ABA GRAFICO -->
+        <div class="tab-pane fade show active" id="tab-grafico">
+            <div id="chart"></div>
+        </div>
+
+        <!-- ABA SIMULAR -->
+        <div class="tab-pane fade" id="tab-simular">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Batalha</label>
+                    <select id="sim-batalha" class="form-select">
+                        <option>1ª Batalha</option>
+                        <option>2ª Batalha</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Quantidade de Resultados</label>
+                    <input type="number" id="sim-top" class="form-value form-control" value="10">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button class="btn btn-primary w-100" onclick="executarSimulacao()">Executar Simulação IA</button>
+                </div>
+            </div>
+            <div id="sim-resultados" class="mt-4"></div>
+        </div>
+
+        <!-- ABA CADASTRAR -->
+        <div class="tab-pane fade" id="tab-cadastrar">
+            <form id="form-cadastro" onsubmit="salvarRegistro(event)">
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Batalha</label>
+                        <select id="cad-batalha" class="form-select"><option>1ª Batalha</option><option>2ª Batalha</option></select>
+                    </div>
+                    <div class="col-md-6" id="box-buff">
+                        <label class="form-label">Buff</label>
+                        <select id="cad-buff" class="form-select"></select>
+                    </div>
+                </div>
+                <div class="row g-2 mb-3">
+                    <div class="col"><select id="p1" class="form-select sel-p" required></select></div>
+                    <div class="col"><select id="p2" class="form-select sel-p" required></select></div>
+                    <div class="col"><select id="p3" class="form-select sel-p" required></select></div>
+                    <div class="col"><select id="p4" class="form-select sel-p" required></select></div>
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col"><input type="number" step="0.1" id="t1" class="form-control" placeholder="Tentativa 1" required></div>
+                    <div class="col"><input type="number" step="0.1" id="t2" class="form-control" placeholder="Tentativa 2" required></div>
+                    <div class="col"><input type="number" step="0.1" id="t3" class="form-control" placeholder="Tentativa 3" required></div>
+                </div>
+                <button type="submit" class="btn btn-success">Salvar Tentativa</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+async function carregarModo() {
+    const modo = document.getElementById('select-modo').value;
+    const res = await fetch(`/api/dados-iniciais/${modo}`);
+    const data = await res.json();
+
+    // Preenche seletores de personagens e buffs
+    const selP = document.querySelectorAll('.sel-p');
+    selP.forEach(s => {
+        s.innerHTML = '<option value="">Selecione...</option>' + data.personagens.map(p => `<option value="${p}">${p}</option>`).join('');
+    });
+
+    const selBuff = document.getElementById('cad-buff');
+    selBuff.innerHTML = data.efeitos.map(e => `<option value="${e}">${e}</option>`).join('');
+    document.getElementById('box-buff').style.display = data.config.tem_efeitos ? 'block' : 'none';
+
+    // Desenha o gráfico
+    if (data.grafico && data.grafico.indices) {
+        const traces = [
+            { x: data.grafico.indices, y: data.grafico.t1, name: 'Tentativa 1', mode: 'lines+markers' },
+            { x: data.grafico.indices, y: data.grafico.t2, name: 'Tentativa 2', mode: 'lines+markers' },
+            { x: data.grafico.indices, y: data.grafico.t3, name: 'Tentativa 3', mode: 'lines+markers' },
+            { x: data.grafico.indices, y: data.grafico.media, name: 'Média', mode: 'lines', line: { dash: 'dash', color: '#000' } }
+        ];
+        Plotly.newPlot('chart', traces, { title: `Desempenho — ${data.config.nome}` });
+    } else {
+        document.getElementById('chart').innerHTML = '<p class="text-muted p-4 text-center">Nenhum resultado registrado para este modo.</p>';
+    }
+}
+
+async function executarSimulacao() {
+    const modo = document.getElementById('select-modo').value;
+    const batalha = document.getElementById('sim-batalha').value;
+    const top_n = document.getElementById('sim-top').value;
+
+    const res = await fetch('/api/simular', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ modo, batalha, top_n })
+    });
+
+    const data = await res.json();
+    const div = document.getElementById('sim-resultados');
+
+    if(data.error) {
+        div.innerHTML = `<div class="alert alert-warning">${data.error}</div>`;
+        return;
+    }
+
+    let html = '<ul class="list-group">';
+    data.forEach(item => {
+        html += `<li class="list-group-list-item list-group-item-action p-3">
+            <strong>Previsão: ${item.previsto.toFixed(2)}</strong> | 
+            ${item.personagem_1}, ${item.personagem_2}, ${item.personagem_3}, ${item.personagem_4} 
+            ${item.efeito_buff ? `(Buff: ${item.efeito_buff})` : ''}
+        </li>`;
+    });
+    html += '</ul>';
+    div.innerHTML = html;
+}
+
+async function salvarRegistro(e) {
+    e.preventDefault();
+    const payload = {
+        modo: document.getElementById('select-modo').value,
+        batalha: document.getElementById('cad-batalha').value,
+        buff: document.getElementById('cad-buff').value,
+        p1: document.getElementById('p1').value,
+        p2: document.getElementById('p2').value,
+        p3: document.getElementById('p3').value,
+        p4: document.getElementById('p4').value,
+        t1: document.getElementById('t1').value,
+        t2: document.getElementById('t2').value,
+        t3: document.getElementById('t3').value,
+    };
+
+    await fetch('/api/cadastrar', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    });
+
+    alert('Registro salvo com sucesso!');
+    carregarModo();
+}
+
+// Inicializa a página
+carregarModo();
+</script>
+</body>
+</html>
