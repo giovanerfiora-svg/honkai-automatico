@@ -1,1 +1,2 @@
-id_registro,batalha,efeito_buff,personagem_1,personagem_2,personagem_3,personagem_4,tentativa_1,tentativa_2,tentativa_3,pontuacao_media,pontuacao_maior,desvio_padrao
+id_registro,batalha,efeito_buff,personagem_1,personagem_2,personagem_3,personagem_4,tentativa_1,tentativa_2,tentativa_3,pontuacao_media,pontuacao_maior,desvio_padrao,métrica_destaque
+e_1785894213670_5360,1ª Batalha,Grande Retórica,Castorice,Amy (Recordação),Tribbie,Hyacine,37480.0,35360.0,36480.0,36440.0,,865.95,37480.0
