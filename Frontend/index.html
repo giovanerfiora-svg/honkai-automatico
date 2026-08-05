@@ -7,9 +7,7 @@
     <title>HSR — Dashboard de Desempenho</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
         :root {
@@ -37,8 +35,7 @@
             box-sizing: border-box;
         }
 
-        html,
-        body {
+        html, body {
             min-height: 100%;
         }
 
@@ -88,7 +85,6 @@
             pointer-events: none;
         }
 
-        /* ===== HEADER ===== */
         .hsr-header {
             display: flex;
             justify-content: space-between;
@@ -169,88 +165,79 @@
             color: var(--text);
         }
 
-        /* ===== TRACK NAV (signature element) ===== */
+        #myTab.nav.nav-tabs::before {
+            display: none;
+        }
+
         #myTab.nav.nav-tabs {
             border: none;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            margin: 0 0 34px;
-            padding: 0 4px;
-            gap: 4px;
-            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            width: 100%;
+            margin: 0 0 28px;
+            padding: 6px;
+            background: rgba(10, 12, 22, 0.4);
+            border-radius: 16px;
+            border: 1px solid rgba(212, 175, 106, 0.08);
         }
 
         #myTab.nav.nav-tabs::before {
-            content: "";
-            position: absolute;
-            left: 22px;
-            right: 22px;
-            top: 15px;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--panel-line) 12%, var(--panel-line) 88%, transparent);
+            display: none;
         }
 
         #myTab .nav-item {
-            flex: 1;
+            width: 100%;
             display: flex;
-            justify-content: center;
         }
 
         #myTab .nav-link {
             all: unset;
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            width: 100%;
+            padding: 12px 18px;
             cursor: pointer;
-            padding: 0 8px 4px;
-            position: relative;
+            border-radius: 12px;
+            background: var(--panel);
+            border: 1px solid var(--panel-line);
             color: var(--muted);
             font-family: var(--font-body);
             font-weight: 600;
-            font-size: 13px;
-            letter-spacing: 0.03em;
-            transition: color .2s ease;
-        }
-
-        #myTab .nav-link::before {
-            content: "";
-            width: 11px;
-            height: 11px;
-            border-radius: 50%;
-            background: var(--panel);
-            border: 2px solid var(--muted-dim);
-            transition: all .25s ease;
-            box-shadow: 0 0 0 4px var(--void);
+            font-size: 12px;
+            letter-spacing: 0.02em;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-sizing: border-box;
         }
 
         #myTab .nav-link:hover {
             color: var(--text);
-        }
-
-        #myTab .nav-link:hover::before {
-            border-color: var(--gold-dim);
+            background: var(--panel-raised);
+            border-color: rgba(212, 175, 106, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
         #myTab .nav-link.active {
-            color: var(--gold-bright);
+            color: #ffffff;
+            background: linear-gradient(135deg, rgba(30, 36, 70, 0.95), rgba(20, 25, 50, 0.95));
+            border-color: var(--gold);
+            box-shadow: 0 4px 16px -2px rgba(212, 175, 106, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.1);
         }
 
-        #myTab .nav-link.active::before {
-            background: var(--gold);
-            border-color: var(--gold);
-            box-shadow: 0 0 0 4px var(--void), 0 0 14px 2px rgba(212, 175, 106, 0.55);
+        #myTab .nav-link.active .hsr-station-label {
+            color: var(--gold-bright);
+            font-weight: 700;
         }
 
         #myTab .nav-link:focus-visible {
             outline: 2px solid var(--gold);
-            outline-offset: 4px;
-            border-radius: 4px;
+            outline-offset: 2px;
         }
 
-        /* ===== PANELS ===== */
         .tab-content {
             position: relative;
             z-index: 1;
@@ -265,7 +252,6 @@
                 opacity: 0;
                 transform: translateY(6px);
             }
-
             to {
                 opacity: 1;
                 transform: none;
@@ -298,7 +284,6 @@
             margin-bottom: 8px;
         }
 
-        /* ===== FORM ELEMENTS ===== */
         .hsr-field-label {
             display: block;
             font-family: var(--font-mono);
@@ -404,7 +389,6 @@
             outline-offset: 3px;
         }
 
-        /* ===== SIMULATION RESULTS ===== */
         .hsr-result {
             display: flex;
             align-items: center;
@@ -479,7 +463,6 @@
             font-size: 14px;
         }
 
-        /* ===== TOAST ===== */
         .hsr-toast {
             position: fixed;
             bottom: 28px;
@@ -507,6 +490,116 @@
         .hsr-toast::before {
             content: "✦ ";
             color: var(--gold);
+        }
+
+        .hsr-toast.toast-error {
+            border-color: rgba(224, 130, 122, 0.5);
+        }
+
+        .hsr-toast.toast-error::before {
+            content: "⚠ ";
+            color: var(--danger);
+        }
+
+        .hsr-spinner {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: hsr-spin .7s linear infinite;
+            vertical-align: -2px;
+        }
+
+        @keyframes hsr-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hsr-btn[disabled] {
+            cursor: not-allowed;
+            opacity: 0.72;
+            filter: grayscale(0.15);
+        }
+
+        .hsr-btn[disabled]:active {
+            transform: none;
+        }
+
+        .hsr-select[disabled],
+        .hsr-select-full[disabled] {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        #chart {
+            transition: opacity .25s ease;
+        }
+
+        #chart.is-loading {
+            opacity: 0.35;
+        }
+
+        .hsr-chart-skeleton {
+            min-height: 420px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 13px;
+            font-family: var(--font-mono);
+            letter-spacing: 0.04em;
+        }
+
+        .hsr-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .hsr-stat {
+            background: var(--panel-raised);
+            border: 1px solid var(--panel-line);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+
+        .hsr-stat-label {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .hsr-stat-value {
+            font-family: var(--font-display);
+            font-size: 21px;
+            color: var(--gold-bright);
+            line-height: 1;
+        }
+
+        .hsr-field-error {
+            font-size: 12px;
+            color: var(--danger);
+            margin-top: 6px;
+            display: none;
+            font-family: var(--font-body);
+        }
+
+        .hsr-field-error.show {
+            display: block;
+        }
+
+        .is-invalid {
+            border-color: var(--danger) !important;
+            box-shadow: 0 0 0 3px rgba(224, 130, 122, 0.16) !important;
         }
 
         @media (max-width: 620px) {
@@ -541,8 +634,8 @@
     <div class="hsr-shell">
         <header class="hsr-header">
             <div>
-                <span class="hsr-eyebrow">Astral Express · Registro de Batalhas</span>
-                <h1 class="hsr-title">HSR Performance Dashboard</h1>
+                <span class="hsr-eyebrow">Registro de Batalhas - Giovane Rubin Fioravanti</span>
+                <h1 class="hsr-title">Painel de Performance</h1>
             </div>
             <div class="hsr-mode">
                 <label for="select-modo" class="hsr-mode-label">Modo</label>
@@ -555,18 +648,28 @@
         </header>
 
         <ul class="nav nav-tabs" id="myTab">
-            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab"
-                    data-bs-target="#tab-grafico"><span class="hsr-station-label">Gráfico</span></button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-simular"><span
-                        class="hsr-station-label">Simular IA</span></button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-cadastrar"><span
-                        class="hsr-station-label">Cadastrar Reg</span></button></li>
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-grafico">
+                    <span class="hsr-station-label">Gráfico</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-simular">
+                    <span class="hsr-station-label">Simular IA</span>
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-cadastrar">
+                    <span class="hsr-station-label">Cadastrar Reg</span>
+                </button>
+            </li>
         </ul>
 
         <div class="tab-content">
             <!-- ABA GRAFICO -->
             <div class="tab-pane fade show active" id="tab-grafico">
                 <div class="hsr-panel">
+                    <div id="stats-strip" class="hsr-stats" style="display:none;"></div>
                     <div id="chart"></div>
                 </div>
             </div>
@@ -584,11 +687,10 @@
                         </div>
                         <div class="col-md-4">
                             <label class="hsr-field-label">Quantidade de Resultados</label>
-                            <input type="number" id="sim-top" class="hsr-input" value="10">
+                            <input type="number" id="sim-top" class="hsr-input" value="10" min="1" max="50">
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
-                            <button class="hsr-btn hsr-btn-primary" onclick="executarSimulacao()">Executar Simulação
-                                IA</button>
+                            <button class="hsr-btn hsr-btn-primary" id="btn-simular" onclick="executarSimulacao()">Executar Simulação IA</button>
                         </div>
                     </div>
                     <div id="sim-resultados" class="mt-4"></div>
@@ -619,14 +721,12 @@
                             <div class="col"><select id="p4" class="hsr-select-full sel-p" required></select></div>
                         </div>
                         <div class="row g-3 mb-3">
-                            <div class="col"><input type="number" step="0.1" id="t1" class="hsr-input"
-                                    placeholder="Tentativa 1" required></div>
-                            <div class="col"><input type="number" step="0.1" id="t2" class="hsr-input"
-                                    placeholder="Tentativa 2" required></div>
-                            <div class="col"><input type="number" step="0.1" id="t3" class="hsr-input"
-                                    placeholder="Tentativa 3" required></div>
+                            <div class="col"><input type="number" step="0.1" id="t1" class="hsr-input" placeholder="Tentativa 1" required></div>
+                            <div class="col"><input type="number" step="0.1" id="t2" class="hsr-input" placeholder="Tentativa 2" required></div>
+                            <div class="col"><input type="number" step="0.1" id="t3" class="hsr-input" placeholder="Tentativa 3" required></div>
                         </div>
-                        <button type="submit" class="hsr-btn hsr-btn-gold">Salvar Tentativa</button>
+                        <div class="hsr-field-error" id="cad-erro">Selecione 4 personagens diferentes.</div>
+                        <button type="submit" class="hsr-btn hsr-btn-gold" id="btn-cadastrar">Salvar Tentativa</button>
                     </form>
                 </div>
             </div>
@@ -637,20 +737,40 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function mostrarToast(msg) {
+        function mostrarToast(msg, tipo = 'success') {
             const t = document.getElementById('hsr-toast');
             t.textContent = msg;
+            t.classList.toggle('toast-error', tipo === 'error');
             t.classList.add('show');
             clearTimeout(window.__hsrToastTimer);
-            window.__hsrToastTimer = setTimeout(() => t.classList.remove('show'), 2600);
+            window.__hsrToastTimer = setTimeout(() => t.classList.remove('show'), 3200);
         }
 
         async function carregarModo() {
             const modo = document.getElementById('select-modo').value;
-            const res = await fetch(`/api/dados-iniciais/${modo}`);
-            const data = await res.json();
+            const selectModo = document.getElementById('select-modo');
+            const chartEl = document.getElementById('chart');
+            const statsEl = document.getElementById('stats-strip');
 
-            // Preenche seletores de personagens e buffs
+            selectModo.disabled = true;
+            statsEl.style.display = 'none';
+            chartEl.classList.remove('is-loading');
+            chartEl.innerHTML = '<div class="hsr-chart-skeleton"><span class="hsr-spinner"></span> Carregando dados...</div>';
+
+            let data;
+            try {
+                const res = await fetch(`/api/dados-iniciais/${modo}`);
+                if (!res.ok) throw new Error('Falha ao carregar dados do modo selecionado.');
+                data = await res.json();
+            } catch (err) {
+                chartEl.innerHTML = `<div class="hsr-alert">Não foi possível carregar os dados. ${err.message || ''}</div>`;
+                mostrarToast('Erro ao carregar dados do modo.', 'error');
+                selectModo.disabled = false;
+                return;
+            } finally {
+                selectModo.disabled = false;
+            }
+
             const selP = document.querySelectorAll('.sel-p');
             selP.forEach(s => {
                 s.innerHTML = '<option value="">Selecione...</option>' + data.personagens.map(p => `<option value="${p}">${p}</option>`).join('');
@@ -660,7 +780,6 @@
             selBuff.innerHTML = data.efeitos.map(e => `<option value="${e}">${e}</option>`).join('');
             document.getElementById('box-buff').style.display = data.config.tem_efeitos ? 'block' : 'none';
 
-            // Desenha o gráfico
             if (data.grafico && data.grafico.indices && data.grafico.indices.length) {
                 const g = data.grafico;
                 const corBatalha = (b) => b === '1ª Batalha' ? '#d4af6a' : '#7c6ff0';
@@ -668,6 +787,29 @@
                 const hoverEquipe = (g.equipe && g.equipe.length) ? g.equipe : g.indices.map(i => `Tentativa ${i + 1}`);
                 const metricaMenorMelhor = data.config['métrica_menor_é_melhor'];
                 const tituloEixoY = data.config.coluna_alvo === 'ciclos_medios' ? 'Ciclos (menor é melhor)' : 'Pontuação média';
+
+                const totalTentativas = g.indices.length;
+                const melhorValor = metricaMenorMelhor ? Math.min(...g.media) : Math.max(...g.media);
+                const mediaGeral = g.media.reduce((a, b) => a + b, 0) / g.media.length;
+                const ultimoValor = g.media[g.media.length - 1];
+                statsEl.innerHTML = `
+                    <div class="hsr-stat">
+                        <span class="hsr-stat-label">Tentativas</span>
+                        <div class="hsr-stat-value">${totalTentativas}</div>
+                    </div>
+                    <div class="hsr-stat">
+                        <span class="hsr-stat-label">${metricaMenorMelhor ? 'Melhor (menor)' : 'Melhor Resultado'}</span>
+                        <div class="hsr-stat-value">${melhorValor.toFixed(2)}</div>
+                    </div>
+                    <div class="hsr-stat">
+                        <span class="hsr-stat-label">Média Geral</span>
+                        <div class="hsr-stat-value">${mediaGeral.toFixed(2)}</div>
+                    </div>
+                    <div class="hsr-stat">
+                        <span class="hsr-stat-label">Última Tentativa</span>
+                        <div class="hsr-stat-value">${ultimoValor.toFixed(2)}</div>
+                    </div>`;
+                statsEl.style.display = 'grid';
 
                 const traces = [
                     {
@@ -686,101 +828,171 @@
                         x: g.indices, y: g.media, name: 'Média', mode: 'lines+markers',
                         line: { color: '#ede9dd', width: 2.5, shape: 'spline' },
                         marker: { size: 9, color: coresPorTentativa, line: { color: '#0a0c16', width: 1.5 } },
-                        error_y: (g.desvio && g.desvio.length) ? { type: 'data', array: g.desvio, color: 'rgba(237,233,221,0.35)', thickness: 1.3, width: 3 } : undefined,
-                        fill: 'tozeroy', fillcolor: 'rgba(212,175,106,0.05)',
+                        error_y: (g.desvio && g.desvio.length) ? { type: 'data', array: g.desvio, color: 'rgba(237,233,221,0.4)', thickness: 1.3, width: 3 } : undefined,
+                        fill: 'tozeroy',
+                        fillcolor: 'rgba(212,175,106,0.07)',
                         text: hoverEquipe,
-                        hovertemplate: '<b>%{text}</b><br>Média: %{y:.2f} ± %{error_y.array:.2f}<extra></extra>'
+                        hovertemplate: '<b>%{text}</b><br>Tentativa #%{x}<br>Média: %{y:.2f} ± %{error_y.array:.2f}<extra></extra>'
                     },
                     (g.recorde && g.recorde.length) ? {
                         x: g.indices, y: g.recorde, name: 'Recorde', mode: 'lines',
-                        line: { dash: 'dot', color: '#5fd0c0', width: 1.5 }, hoverinfo: 'skip'
+                        line: { dash: 'dot', color: '#5fd0c0', width: 1.5 },
+                        hovertemplate: 'Recorde até aqui: %{y:.2f}<extra></extra>'
                     } : null,
                     { x: [null], y: [null], mode: 'markers', marker: { color: '#d4af6a', size: 9 }, name: '1ª Batalha' },
                     { x: [null], y: [null], mode: 'markers', marker: { color: '#7c6ff0', size: 9 }, name: '2ª Batalha' }
                 ].filter(Boolean);
 
                 Plotly.newPlot('chart', traces, {
-                    title: { text: `Desempenho — ${data.config.nome}`, font: { family: 'Cinzel, serif', color: '#e8c98a', size: 18 } },
+                    title: {
+                        text: `Desempenho — ${data.config.nome}<br><span style="font-size:11px;color:#8b93ac;font-family:Manrope,sans-serif;letter-spacing:0.04em;">${totalTentativas} tentativa${totalTentativas === 1 ? '' : 's'} registrada${totalTentativas === 1 ? '' : 's'}</span>`,
+                        font: { family: 'Cinzel, serif', color: '#e8c98a', size: 18 }
+                    },
                     paper_bgcolor: 'transparent',
                     plot_bgcolor: 'transparent',
                     font: { family: 'Manrope, sans-serif', color: '#8b93ac' },
+                    hovermode: 'closest',
                     xaxis: {
                         title: { text: 'Tentativa #', font: { size: 12 } },
                         gridcolor: 'rgba(212,175,106,0.08)', zerolinecolor: 'rgba(212,175,106,0.15)',
+                        showspikes: true, spikemode: 'across', spikedash: 'dot', spikethickness: 1, spikecolor: 'rgba(212,175,106,0.4)',
                         rangeslider: g.indices.length > 8 ? { visible: true, bgcolor: 'rgba(23,28,56,0.5)', bordercolor: 'rgba(212,175,106,0.2)', thickness: 0.07 } : undefined
                     },
-                    yaxis: { title: { text: tituloEixoY, font: { size: 12 } }, gridcolor: 'rgba(212,175,106,0.08)', zerolinecolor: 'rgba(212,175,106,0.15)' },
-                    legend: { orientation: 'h', y: -0.28, font: { color: '#8b93ac' } },
-                    margin: { t: 56, l: 60, r: 24, b: 56 },
-                    hoverlabel: { bgcolor: '#171c38', bordercolor: '#d4af6a', font: { color: '#ede9dd', family: 'Manrope, sans-serif' } }
-                }, { responsive: true, displaylogo: false });
+                    yaxis: {
+                        title: { text: tituloEixoY, font: { size: 12 } },
+                        gridcolor: 'rgba(212,175,106,0.08)', zerolinecolor: 'rgba(212,175,106,0.15)'
+                    },
+                    legend: { orientation: 'h', y: -0.28, font: { color: '#8b93ac', size: 11 }, itemsizing: 'constant' },
+                    margin: { t: 64, l: 60, r: 24, b: 56 },
+                    hoverlabel: { bgcolor: '#171c38', bordercolor: '#d4af6a', font: { color: '#ede9dd', family: 'Manrope, sans-serif', size: 12 }, align: 'left' }
+                }, {
+                    responsive: true,
+                    displaylogo: false,
+                    modeBarButtonsToRemove: ['lasso2d', 'select2d', 'autoScale2d'],
+                    displayModeBar: 'hover'
+                });
             } else {
-                document.getElementById('chart').innerHTML = '<div class="hsr-empty"><span>Nenhum registro por enquanto</span>Cadastre uma tentativa para ver o desempenho neste modo.</div>';
+                statsEl.style.display = 'none';
+                chartEl.innerHTML = '<div class="hsr-empty"><span>Nenhum registro por enquanto</span>Cadastre uma tentativa para ver o desempenho neste modo.</div>';
             }
         }
 
         async function executarSimulacao() {
             const modo = document.getElementById('select-modo').value;
             const batalha = document.getElementById('sim-batalha').value;
-            const top_n = document.getElementById('sim-top').value;
+            const top_n = document.getElementById('sim-top').value || 10;
+            const btn = document.getElementById('btn-simular');
 
             const div = document.getElementById('sim-resultados');
-            div.innerHTML = '<div class="hsr-empty">Calculando previsões...</div>';
+            div.innerHTML = '<div class="hsr-empty"><span class="hsr-spinner" style="color:var(--gold);"></span><br><br>Calculando previsões com IA...</div>';
 
-            const res = await fetch('/api/simular', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ modo, batalha, top_n })
-            });
+            btn.disabled = true;
+            const textoOriginal = btn.textContent;
+            btn.innerHTML = '<span class="hsr-spinner"></span> Calculando...';
 
-            const data = await res.json();
+            try {
+                const res = await fetch('/api/simular', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ modo, batalha, top_n })
+                });
 
-            if (data.error) {
-                div.innerHTML = `<div class="hsr-alert">${data.error}</div>`;
-                return;
-            }
+                const data = await res.json();
 
-            let html = '';
-            data.forEach((item, i) => {
-                html += `<div class="hsr-result">
-            <div class="hsr-rank">${i + 1}</div>
-            <div class="hsr-result-body">
-                <div class="hsr-result-score">Previsão: ${item.previsto.toFixed(2)}</div>
-                <div class="hsr-result-team">
-                    <span class="hsr-chip">${item.personagem_1}</span><span class="hsr-chip">${item.personagem_2}</span><span class="hsr-chip">${item.personagem_3}</span><span class="hsr-chip">${item.personagem_4}</span>${item.efeito_buff ? `<span class="hsr-chip hsr-chip-buff">${item.efeito_buff}</span>` : ''}
+                if (!res.ok || data.error) {
+                    div.innerHTML = `<div class="hsr-alert">${data.error || 'Erro ao executar a simulação.'}</div>`;
+                    return;
+                }
+
+                let html = '';
+                data.forEach((item, i) => {
+                    html += `<div class="hsr-result">
+                <div class="hsr-rank">${i + 1}</div>
+                <div class="hsr-result-body">
+                    <div class="hsr-result-score">Previsão: ${item.previsto.toFixed(2)}</div>
+                    <div class="hsr-result-team">
+                        <span class="hsr-chip">${item.personagem_1}</span><span class="hsr-chip">${item.personagem_2}</span><span class="hsr-chip">${item.personagem_3}</span><span class="hsr-chip">${item.personagem_4}</span>${item.efeito_buff ? `<span class="hsr-chip hsr-chip-buff">${item.efeito_buff}</span>` : ''}
+                    </div>
                 </div>
-            </div>
-        </div>`;
-            });
-            div.innerHTML = html || '<div class="hsr-empty">Nenhum resultado encontrado.</div>';
+            </div>`;
+                });
+                div.innerHTML = html || '<div class="hsr-empty">Nenhum resultado encontrado.</div>';
+            } catch (err) {
+                div.innerHTML = '<div class="hsr-alert">Não foi possível conectar ao servidor. Tente novamente.</div>';
+                mostrarToast('Erro ao executar simulação.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = textoOriginal;
+            }
+        }
+
+        function limparErroSelecao() {
+            document.querySelectorAll('.sel-p').forEach(s => s.classList.remove('is-invalid'));
+            document.getElementById('cad-erro').classList.remove('show');
         }
 
         async function salvarRegistro(e) {
             e.preventDefault();
+            const btn = document.getElementById('btn-cadastrar');
+            const selsP = ['p1', 'p2', 'p3', 'p4'].map(id => document.getElementById(id));
+            const valoresP = selsP.map(s => s.value);
+
+            limparErroSelecao();
+
+            if (valoresP.some(v => !v)) {
+                mostrarToast('Selecione os 4 personagens da equipe.', 'error');
+                return;
+            }
+
+            const temDuplicado = new Set(valoresP).size !== valoresP.length;
+            if (temDuplicado) {
+                selsP.forEach(s => s.classList.add('is-invalid'));
+                document.getElementById('cad-erro').classList.add('show');
+                mostrarToast('Personagens repetidos na equipe.', 'error');
+                return;
+            }
+
             const payload = {
                 modo: document.getElementById('select-modo').value,
                 batalha: document.getElementById('cad-batalha').value,
-                buff: document.getElementById('cad-buff').value,
-                p1: document.getElementById('p1').value,
-                p2: document.getElementById('p2').value,
-                p3: document.getElementById('p3').value,
-                p4: document.getElementById('p4').value,
+                buff: document.getElementById('cad-buff') ? document.getElementById('cad-buff').value : null,
+                p1: valoresP[0],
+                p2: valoresP[1],
+                p3: valoresP[2],
+                p4: valoresP[3],
                 t1: document.getElementById('t1').value,
                 t2: document.getElementById('t2').value,
                 t3: document.getElementById('t3').value,
             };
 
-            await fetch('/api/cadastrar', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+            btn.disabled = true;
+            const textoOriginal = btn.textContent;
+            btn.innerHTML = '<span class="hsr-spinner"></span> Salvando...';
 
-            mostrarToast('Registro salvo com sucesso!');
-            carregarModo();
+            try {
+                const res = await fetch('/api/cadastrar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) throw new Error();
+
+                mostrarToast('Registro salvo com sucesso!');
+                document.getElementById('form-cadastro').reset();
+                carregarModo();
+            } catch (err) {
+                mostrarToast('Erro ao salvar o registro. Tente novamente.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = textoOriginal;
+            }
         }
 
-        // Inicializa a página
+        document.addEventListener('change', (e) => {
+            if (e.target.classList.contains('sel-p')) limparErroSelecao();
+        });
+
         carregarModo();
     </script>
 </body>
