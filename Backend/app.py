@@ -17,11 +17,6 @@ app = Flask(__name__, template_folder=TEMPLATE_DIR)
 PASTA_TABELAS = os.path.join(BASE_DIR, "Dados")
 ARQUIVO_PERSONAGENS = os.path.join(PASTA_TABELAS, "personagens.csv")
 
-CURANDEIROS = {
-    "Gallagher", "Huohuo", "Hyacine", "Dan Heng (Preservação)",
-    "Aventurine", "Luocha", "Fu Xuan", "Gepard", "Bailu", "Lynx", "March 7th"
-}
-
 MODOS_CONFIG = {
     "sombra_apocaliptica": {
         "nome": "Sombra Apocalíptica",
@@ -54,6 +49,15 @@ MODOS_CONFIG = {
 
 _CSV_CACHE = {}      
 _MODELO_CACHE = {}   
+
+def _sanitizar_nan(valores):
+    """Troca NaN por None nas listas antes de mandar pro jsonify.
+    NaN "cru" vira o token inválido `NaN` no corpo do JSON, e o
+    JSON.parse do navegador rejeita isso — foi a causa do gráfico
+    ficar preso em 'Carregando dados...' quando havia célula vazia
+    no CSV (ex.: desvio_padrao ausente em registros antigos)."""
+    return [None if pd.isna(v) else v for v in valores]
+
 
 def _ler_csv_obrigatorio(caminho):
     if not os.path.exists(caminho):
@@ -92,24 +96,11 @@ def obter_modelo(modo, config, df_res, arq_res):
     return pipeline
 
 def _gerar_combos_validos(personagens):
+    """Gera todas as combinações possíveis de 4 personagens, sem exigir curandeiro.
+    A IA (e o usuário) ficam livres para testar qualquer composição de equipe."""
     if len(personagens) < 4:
         return []
-    curandeiros_disp = [p for p in personagens if p in CURANDEIROS]
-    outros_disp = [p for p in personagens if p not in CURANDEIROS]
-
-    if not curandeiros_disp:
-        return []
-
-    combos = []
-    max_cura = min(4, len(curandeiros_disp))
-    for n_cura in range(1, max_cura + 1):
-        n_outros = 4 - n_cura
-        if n_outros > len(outros_disp):
-            continue
-        for combo_cura in itertools.combinations(curandeiros_disp, n_cura):
-            for combo_outros in itertools.combinations(outros_disp, n_outros):
-                combos.append(tuple(sorted(combo_cura + combo_outros)))
-    return combos
+    return list(itertools.combinations(sorted(personagens), 4))
 
 @app.route("/")
 def index():
@@ -157,12 +148,12 @@ def dados_iniciais(modo):
 
         grafico_data = {
             "indices": list(df_res.index),
-            "t1": df_res["tentativa_1"].tolist() if "tentativa_1" in df_res.columns else [],
-            "t2": df_res["tentativa_2"].tolist() if "tentativa_2" in df_res.columns else [],
-            "t3": df_res["tentativa_3"].tolist() if "tentativa_3" in df_res.columns else [],
-            "media": media.tolist(),
-            "desvio": desvio.tolist(),
-            "recorde": recorde.tolist(),
+            "t1": _sanitizar_nan(df_res["tentativa_1"].tolist()) if "tentativa_1" in df_res.columns else [],
+            "t2": _sanitizar_nan(df_res["tentativa_2"].tolist()) if "tentativa_2" in df_res.columns else [],
+            "t3": _sanitizar_nan(df_res["tentativa_3"].tolist()) if "tentativa_3" in df_res.columns else [],
+            "media": _sanitizar_nan(media.tolist()),
+            "desvio": _sanitizar_nan(desvio.tolist()),
+            "recorde": _sanitizar_nan(recorde.tolist()),
             "batalha": df_res["batalha"].tolist() if "batalha" in df_res.columns else [],
             "equipe": equipe.tolist(),
         }
@@ -278,4 +269,8 @@ def cadastrar():
     return jsonify({"success": True})
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    # threaded=True é essencial aqui: sem isso o servidor de desenvolvimento
+    # atende UMA requisição por vez, então uma simulação pesada (que treina/
+    # prediz com o RandomForest) bloqueia até o carregamento do gráfico,
+    # que fica parecendo travado em "Carregando dados..." indefinidamente.
+    app.run(debug=True, port=5000, threaded=True)

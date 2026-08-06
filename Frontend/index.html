@@ -762,15 +762,17 @@
                 const res = await fetch(`/api/dados-iniciais/${modo}`);
                 if (!res.ok) throw new Error('Falha ao carregar dados do modo selecionado.');
                 data = await res.json();
+
+                renderizarModo(data, chartEl, statsEl);
             } catch (err) {
                 chartEl.innerHTML = `<div class="hsr-alert">Não foi possível carregar os dados. ${err.message || ''}</div>`;
                 mostrarToast('Erro ao carregar dados do modo.', 'error');
-                selectModo.disabled = false;
-                return;
             } finally {
                 selectModo.disabled = false;
             }
+        }
 
+        function renderizarModo(data, chartEl, statsEl) {
             const selP = document.querySelectorAll('.sel-p');
             selP.forEach(s => {
                 s.innerHTML = '<option value="">Selecione...</option>' + data.personagens.map(p => `<option value="${p}">${p}</option>`).join('');
